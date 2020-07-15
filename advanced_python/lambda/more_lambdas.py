@@ -42,17 +42,18 @@ def _get_currency_resource(resource, transform=(lambda x:x)):
     }
 
     my_resource = data[resource]
+    # return list(map(transform, my_resource)) is same as comprehension below
     return [transform(x) for x in my_resource]
 
 def get_currency_code():
     return _get_currency_resource('items', lambda x: x['code'].upper())
 
 def get_currencies():
-    return _get_currency_resource('items', lambda x: Currency(x['code'].upper(), x['amount_to_usd']))
+    return _get_currency_resource('items', lambda x: Currency(x['code'], x['amount_to_usd']))
 
 def calculate_in_all_currencies(usd_amount):
     print(f'-- {usd_amount} USD in all currencies --')
     for currency in get_currencies():
-        print(f'In {currency.code}: {currency.in_currency(usd_amount)}')
+        print(f'In {currency.code.upper()}: {currency.in_currency(usd_amount):.2f}')
 
 print(calculate_in_all_currencies(150))
