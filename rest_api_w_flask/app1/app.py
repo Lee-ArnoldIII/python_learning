@@ -15,7 +15,7 @@ stores = [
     }
 ]
 
-app.route('/')
+@app.route('/')
 def home():
     return render_template('index.html')
 
@@ -34,10 +34,9 @@ def create_store():
 @app.route('/store/<string:name>')
 def get_store(name):
     for store in stores:
-        if name == stores['name']:
+        if store['name'] == name:
             return jsonify(store)
-        else:
-            raise jsonify({'message': 'store not found'})
+    return jsonify({'message': 'store not found'})
 
 # GET /store
 @app.route('/store')
@@ -62,9 +61,9 @@ def create_item_in_store(name):
 @app.route('/store/<string:name>/item')
 def get_items_in_store(name):
     for store in stores:
-        if stores['name'] == name:
-            return jsonify({'items': store['item']})
+        if store['name'] == name:
+            return jsonify({'items': store['items']})
     return jsonify({'message': 'store not found'})
 
 
-app.run(port=5000)
+app.run(port=5000, debug=True)
