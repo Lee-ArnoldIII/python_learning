@@ -12,6 +12,15 @@ stores = [
             'price': 15.99
             }
         ]
+    },
+    {
+    'name': 'Test Store',
+        'items': [
+            {
+            'name': 'This Item',
+            'price': 12.75
+            }
+        ]
     }
 ]
 
@@ -46,7 +55,7 @@ def get_stores():
 # POST /store/<string:name>/item {name: price}
 @app.route('/store/<string:name>/item', methods=['POST'])
 def create_item_in_store(name):
-    request_data = request._get_json()
+    request_data = request.get_json()
     for store in stores:
         if store['name'] == name:
             new_item = {
