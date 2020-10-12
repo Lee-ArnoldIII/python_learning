@@ -40,4 +40,13 @@ class User:
 
 class UserRegister(Resource):
     def post(self):
-        pass     
+        connection = sqlite3.connect('data.db')
+        cursor = connection.cursor()
+
+        query = "INSERT INTO users VALUES (NULL, ?, ?)"
+        cursor.execute(query, (data['username'], data['password']))
+
+        connection.commit()
+        connection.close()
+
+        return {"message": "User created successfully."}, 201     
