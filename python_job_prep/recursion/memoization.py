@@ -32,7 +32,7 @@ def factorial2(k):
     if k < 2:
         return 1
 
-    return k * factorial(k-1)
+    return k * factorial2(k-1)
 
 factorial2 = Memoize(factorial2)
 
