@@ -39,6 +39,15 @@ class Item(Resource):
 
         item = {'name': name, 'price': data['price']}
 
+        try:
+            self.insert(item)
+        except:
+            return {"message": "An error occurred insurting the item."}, 500
+
+        return item, 201
+
+    @classmethod
+    def insert(cls, item):
         connection = sqlite3.connect('data.db')
         cursor = connection.cursor()
 
@@ -48,7 +57,7 @@ class Item(Resource):
         connection.commit()
         connection.close()
         
-        return item, 201
+        
 
     def delete(self, name):
         connection = sqlite3.connect('data.db')
@@ -65,14 +74,44 @@ class Item(Resource):
     def put(self, name):
         data = Item.parser.parse_args()
 
-        item = next(filter(lambda x: x['name'] == name, items), None)
+        item = self.find_by_name(name)
+        updated_item = {'name': name, 'price': data['price']}
+
         if item is None: 
-            item = {'name': name, 'price': data['price']}
-            items.append(item)
+            try:
+                self.insert(updated_item)
+            except: 
+                return {"message": "An error occurred inserting the item."}, 500
         else:
-            item.update(data)
-        return item
+            try:
+                self.update(updated_item)
+            except:
+                return {"message": "An error occurred updating the item."}, 500
+        return updated_item
+
+    @classmethod
+    def update(cls, item):
+        connection = sqlite3.connect('data.db')
+        cursor = connection.cursor()
+
+        query = "UPDATE items SET price=? WHERE name=?"
+        cursor.execute(query, (item['price'], item['name']))
+
+        connection.commit()
+        connection.close()
+
 
 class ItemList(Resource):
     def get(self):
+        connection = sqlite3.connect('data.db')
+        cursor = connection.cursor()
+
+        query = "SELECT * FROM items"
+        result = cursor.execute(query)
+        items = []
+        for row in result:
+            items.append({'name': row[0], 'price': row[1]})
+        
+        connection.close()
+
         return {'items': items}
